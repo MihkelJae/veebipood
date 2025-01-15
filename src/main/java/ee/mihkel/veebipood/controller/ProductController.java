@@ -27,6 +27,9 @@ public class ProductController {
     @PostMapping("products")
     public List<Product> addProduct(@RequestBody Product product) {
 //        productRepository.save(new Product(productName, 1.2, true, ""));
+        if(product.getName() == null) {
+            throw new RuntimeException("Toote nimi puudub");
+        }
         if (product.getName().toLowerCase().charAt(0) == product.getName().charAt(0)) {
             throw new IllegalArgumentException("Toode väikse tähega");
         }
@@ -41,12 +44,12 @@ public class ProductController {
         return productRepository.findAll();
     }
 
-//    @RequestParam /products?id=1 (2 võie enam ja GET)
+//    @RequestParam /products?id=1 (2 või enam ja GET)
 //    @PathVariable /products/1 (1 muutuja)
 //    @RequestBody (POST)
 
     @DeleteMapping("products/{id}")
-    public List<Product> deleteProduct(@RequestBody Long id) {
+    public List<Product> deleteProduct(@PathVariable Long id) {
         productRepository.deleteById(id);
         return productRepository.findAll();
     }
@@ -65,8 +68,9 @@ public class ProductController {
         return productRepository.findAll();
     }
 
-    @PutMapping("products")
+    @PutMapping("products") // TODO: POST ja PUT päringute veateted samaks
     public List<Product> editProduct(@RequestBody Product product) {
+
         if (product.getName() == null || product.getName().toLowerCase().charAt(0) == product.getName().charAt(0)) {
             throw new RuntimeException("Toode peab olemas suure tähega");
         }
