@@ -8,7 +8,7 @@ import ManageProducts from './pages/admin/ManageProducts';
 import { useState } from 'react';
 import NavigationBar from './components/Navigationbar';
 import NotFound from './pages/NotFound';
-import AddProduct from './pages/admin/addProduct';
+import AddProduct from './pages/admin/AddProduct';
 
 function App() {
   const [count, setCount] = useState(0)

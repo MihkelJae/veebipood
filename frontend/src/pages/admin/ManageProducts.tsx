@@ -29,16 +29,57 @@ function ManageProducts() {
 }
 
 
+function changeProductActive(product: Product) {
+  // fetch("http://localhost:8080/product-active?id=" + product.id + "&active=" + !product.active, {
+  fetch(`http://localhost:8080/product-active?id=${product.id}&active=${!product.active}`, {
+    method: "PATCH"
+    }) 
+    .then(res => res.json())
+    .then(json => {
+      if (json.timestamp && json.status && json.error) {
+          setMessage(json.error);
+        } else {
+      setProducts(json)
+    }
+  })
+}
+
+
   return (
     <div>
-        <div>{message}</div>
-    <div>{products.map(product => 
-      <div>
-        <span>{product.name}: </span>
-        <span>{product.price} €</span>
-        <Button variant="outlined" onClick={() => deleteProduct(product)}>x</Button>
-        </div>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Active</th>
+            <th>Image</th>
+            <th>Category</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {products.map(product => 
+            <tr key={product.id} className={product.active ? "active" : "inactive"}>
+            <td>{product.id}: </td>
+            <td>{product.name}: </td>
+            <td>{product.price}</td>
+            <td>{product.active ? "Active" : "Inactive"}</td>
+            <td>{product.image}</td>
+            <td>{product.category?.name}</td>
+            <td style={{textAlign: "right"}}>
+              <button onClick={() => changeProductActive(product)}>Muuda {product.active ? "mitteaktiivseks": "aktiivseks"}</button>
+              <Button variant="outlined" onClick={() => deleteProduct(product)}>x</Button>
+              <button>Muuda</button>
+            </td>
+        </tr>
       )}
+        </tbody>
+      </table>
+
+        <div>{message}</div>
+    <div>
       </div>
     </div>
   )

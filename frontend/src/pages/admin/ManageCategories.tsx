@@ -33,7 +33,7 @@ function ManageCategories() {
         {/* <div>{message}</div> */}
     <div>Kokku kategooriaid: {categories.length} tk</div>
     <div>{categories.map(category => 
-      <div>
+      <div key={category.id}>
         <span>{category.name}</span>
         <button onClick={() => kustuta(category.id)}>x</button>
       </div> )}

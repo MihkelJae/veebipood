@@ -3,6 +3,8 @@ package ee.mihkel.veebipood.controller;
 import ee.mihkel.veebipood.entity.Product;
 import ee.mihkel.veebipood.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,8 +23,23 @@ public class ProductController {
 //        products.add(new Product("Coca", 1.2, true, ""));
 //        products.add(new Product());
 //        return products;
-        return productRepository.findAll();
+        return productRepository.findByOrderByIdAsc();
     }
+
+    //pageable tekitab automaateselt järgmised @RequestParamid juurde:
+    //public-products?page=0&sort=id
+    @GetMapping("public-products")
+    public Page<Product> getPublicProduct(@RequestParam Long categoryId, Pageable pageable) {
+        if(categoryId == 0) {
+            return productRepository.findByOrderByIdAsc(pageable);
+        }
+        return productRepository.findByCategory_IdOrderByIdAsc(categoryId, pageable);
+    }
+
+//    @GetMapping("products-by-category")
+//    public Page<Product> getProductsByCategory(@RequestParam Long categoryId, Pageable pageable) {
+//        return productRepository.findByCategory_IdOrderByIdAsc(categoryId, pageable);
+//    }
 
     @PostMapping("products")
     public List<Product> addProduct(@RequestBody Product product) {
@@ -41,7 +58,7 @@ public class ProductController {
         }
         product.setActive(true);
         productRepository.save(product);
-        return productRepository.findAll();
+        return productRepository.findByOrderByIdAsc();
     }
 
 //    @RequestParam /products?id=1 (2 või enam ja GET)
@@ -51,7 +68,7 @@ public class ProductController {
     @DeleteMapping("products/{id}")
     public List<Product> deleteProduct(@PathVariable Long id) {
         productRepository.deleteById(id);
-        return productRepository.findAll();
+        return productRepository.findByOrderByIdAsc();
     }
 
     @GetMapping("products/{id}")
@@ -62,10 +79,10 @@ public class ProductController {
 
     @PatchMapping("product-active")
     public List<Product> changeProductActive(@RequestParam Long id, @RequestParam Boolean active) {
-        Product product = productRepository.getReferenceById(id); //findById.orElseThrow();
+        Product product = productRepository.findById(id).orElseThrow(); //getReferenceById(id);
         product.setActive(active);
         productRepository.save(product);
-        return productRepository.findAll();
+        return productRepository.findByOrderByIdAsc();
     }
 
     @PutMapping("products") // TODO: POST ja PUT päringute veateted samaks
@@ -81,6 +98,6 @@ public class ProductController {
             throw new RuntimeException("Sellist ID-ga toodet pole");
         }
         productRepository.save(product);
-        return productRepository.findAll();
+        return productRepository.findByOrderByIdAsc();
     }
 }
